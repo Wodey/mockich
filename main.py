@@ -75,7 +75,7 @@ async def update(message: types.Message):
     button2 = types.KeyboardButton(text='Почту')
     keyboard.add(button1)
     keyboard.add(button2)
-    await message.answer('Что ты хочешь поменять?')
+    await message.answer('Что ты хочешь поменять?', reply_markup=keyboard)
 
 @dp.message_handler(lambda msg: state['page'] == 4 and msg.text == 'Имя')
 async def update_email(message: types.Message):
