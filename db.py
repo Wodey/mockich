@@ -13,7 +13,18 @@ class Database:
 
     def create_user(self, data):
         with self.db.cursor() as cursor:
-            cursor.execute(f"INSERT INTO users (name, email, nickname) VALUES {data['name'], data['email'], data['nickname']};")
+            cursor.execute(
+                f"INSERT INTO users (name, email, nickname) VALUES {data['name'], data['email'], data['nickname']};")
+
+    def get_user_id_by_tg_name(self, nickname):
+        with self.db.cursor() as cursor:
+            cursor.execute(f"SELECT id FROM users WHERE nickname = '{nickname}'")
+            return cursor.fetchone()
+
+    def create_request2meet(self, data):
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"INSERT into requests2meet(date, user_id, difficulty, type, companies) VALUES {data['date'], data['user_id'], data['difficulty'], data['type'], data['companies']}")
 
     def get_users(self):
         with self.db.cursor() as cursor:
@@ -29,11 +40,11 @@ class Database:
             # cursor.execute("DROP TABLE meetings;")
 
             cursor.execute("CREATE TABLE users(id SERIAL PRIMARY KEY, name VARCHAR(50), email VARCHAR(50), \
-            nickname VARCHAR(30))")
-            cursor.execute("CREATE TABLE requests2meet(id SERIAL PRIMARY KEY, date TIMESTAMP, user1_id INT, \
-            user2_id INT, difficulty INT, type INT, FOREIGN KEY(user1_id) REFERENCES users(id), \
-            FOREIGN KEY(user2_id) REFERENCES  users(id))")
-            cursor.execute("CREATE TABLE meetings(id SERIAL PRIMARY KEY, date TIMESTAMP, user1_id INT, \
+            nickname VARCHAR(30) UNIQUE NOT NULL)")
+            cursor.execute("CREATE TABLE requests2meet(id SERIAL PRIMARY KEY, date VARCHAR(20), user_id INT, \
+             difficulty INT, type INT, companies VARCHAR(50), \
+            FOREIGN KEY(user_id) REFERENCES  users(id))")
+            cursor.execute("CREATE TABLE meetings(id SERIAL PRIMARY KEY, date VARCHAR(20), user1_id INT, \
             user2_id INT, difficulty INT, type INT, link VARCHAR(100), FOREIGN KEY(user1_id) REFERENCES users(id), \
             FOREIGN KEY(user2_id) REFERENCES  users(id)) ")
 
@@ -42,4 +53,12 @@ if __name__ == "__main__":
     db = Database()
     print(db.get_users())
     # db.initialization()
-    db.create_user({'name': 'ivan', 'email': 'ivannewest@gmail.com', 'nickname': 'Ivannewest'})
+    # db.create_user({'name': 'ivan', 'email': 'ivannewest@gmail.com', 'nickname': 'Ivannewest'})
+    # print(db.get_user_id_by_tg_name('Ivannewest')[0])
+    db.create_request2meet({
+        'date': '11:50',
+        'user_id': 1,
+        "type": 2,
+        'companies': 'amazon;forex',
+        'difficulty': 2
+    })
