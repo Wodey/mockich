@@ -26,6 +26,20 @@ class Database:
             cursor.execute(
                 f"INSERT into requests2meet(date, user_id, difficulty, type, companies) VALUES {data['date'], data['user_id'], data['difficulty'], data['type'], data['companies']}")
 
+    def create_meeting(self, data):
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"INSERT INTO meetings(date, user1_id, user2_id, difficulty, type, link) VALUES {data['date'], data['user1_id'], data['user2_id'], data['difficulty'], data['type'], data['link']}")
+
+    def delete_requests2meet(self, id):
+        with self.db.cursor() as cursor:
+            cursor.execute(f"DELETE FROM requests2meet WHERE id={id}")
+
+    def get_requests2meet(self):
+        with self.db.cursor() as cursor:
+            cursor.execute('SELECT id, user_id, date, difficulty, type, companies  FROM requests2meet')
+            return cursor.fetchall()
+
     def get_users(self):
         with self.db.cursor() as cursor:
             cursor.execute("select * from test")
@@ -53,11 +67,27 @@ if __name__ == "__main__":
     db = Database()
     print(db.get_users())
     # db.initialization()
+
     # db.create_user({'name': 'ivan', 'email': 'ivannewest@gmail.com', 'nickname': 'Ivannewest'})
+    # db.create_user({'name': 'Ванька', 'email': 'ivansmartest@gmail.com', 'nickname': 'Ivansmartest'})
     # print(db.get_user_id_by_tg_name('Ivannewest')[0])
+    # db.create_request2meet({
+    #     'date': '11:50',
+    #     'user_id': 1,
+    #     "type": 2,
+    #     'companies': 'amazon;forex',
+    #     'difficulty': 2
+    # })
     db.create_request2meet({
         'date': '11:50',
-        'user_id': 1,
+        'user_id': 2,
+        "type": 2,
+        'companies': 'amazon;forex',
+        'difficulty': 2
+    }),
+    db.create_request2meet({
+        'date': '13:20',
+        'user_id': 2,
         "type": 2,
         'companies': 'amazon;forex',
         'difficulty': 2
