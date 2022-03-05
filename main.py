@@ -3,10 +3,13 @@ import logging
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
+from db import Database
 
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
+
+db = Database()
 
 bot = Bot(token=getenv('BOT_TOKEN'))
 dp = Dispatcher(bot)
@@ -65,6 +68,11 @@ async def save_date(message: types.Message):
     button2 = types.KeyboardButton(text='Назначить собеседование')
     keyboard.add(button1)
     keyboard.add(button2)
+    db.create_user({
+        'name': state['name'],
+        'email': state['email'],
+        'nickname': state['tg_username']
+    })
     await message.answer(f"Твоя анкета готова, теперь можешь назначить собеседование ", reply_markup=keyboard)
 
 @dp.message_handler(lambda msg: state['page'] == 3 and msg.text == 'Нет')
