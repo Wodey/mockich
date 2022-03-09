@@ -54,7 +54,7 @@ class Database:
             # cursor.execute("DROP TABLE meetings;")
 
             cursor.execute("CREATE TABLE users(id SERIAL PRIMARY KEY, name VARCHAR(50), email VARCHAR(50), \
-            nickname VARCHAR(30) UNIQUE NOT NULL)")
+            nickname VARCHAR(30) UNIQUE NOT NULL, meetings INT DEFAULT 0)")
             cursor.execute("CREATE TABLE requests2meet(id SERIAL PRIMARY KEY, date VARCHAR(20), user_id INT, \
              difficulty INT, type INT, companies VARCHAR(50), \
             FOREIGN KEY(user_id) REFERENCES  users(id))")
@@ -66,7 +66,7 @@ class Database:
 if __name__ == "__main__":
     db = Database()
     print(db.get_users())
-    # db.initialization()
+    db.initialization()
 
     # db.create_user({'name': 'ivan', 'email': 'ivannewest@gmail.com', 'nickname': 'Ivannewest'})
     # db.create_user({'name': 'Ванька', 'email': 'ivansmartest@gmail.com', 'nickname': 'Ivansmartest'})
@@ -78,17 +78,17 @@ if __name__ == "__main__":
     #     'companies': 'amazon;forex',
     #     'difficulty': 2
     # })
-    db.create_request2meet({
-        'date': '11:50',
-        'user_id': 2,
-        "type": 2,
-        'companies': 'amazon;forex',
-        'difficulty': 2
-    }),
-    db.create_request2meet({
-        'date': '13:20',
-        'user_id': 2,
-        "type": 2,
-        'companies': 'amazon;forex',
-        'difficulty': 2
-    })
+    # db.create_request2meet({
+    #     'date': '11:50',
+    #     'user_id': 2,
+    #     "type": 2,
+    #     'companies': 'amazon;forex',
+    #     'difficulty': 2
+    # }),
+    # db.create_request2meet({
+    #     'date': '13:20',
+    #     'user_id': 2,
+    #     "type": 2,
+    #     'companies': 'amazon;forex',
+    #     'difficulty': 2
+    # })

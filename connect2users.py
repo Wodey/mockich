@@ -1,4 +1,5 @@
 from db import Database
+import requests
 
 db = Database()
 
@@ -33,3 +34,5 @@ def connect2users():
 
 if __name__ == "__main__":
     connect2users()
+    r = requests.get('http://meet.google.com/new')
+    print(r.headers)

@@ -177,6 +177,7 @@ async def intervie_type(message: types.Message):
 
     await message.answer('Выберете интересующую вас компанию', reply_markup=keyboard)
 
+
 @dp.message_handler(lambda msg: state['page'] == 10 and msg.text != 'Далее')
 async def set_company(message: types.Message):
     if message.text in state['companies']:
@@ -221,6 +222,7 @@ async def save_request_to_meeting(message: types.Message):
             'companies': ';'.join(list(state['companies']))
         })
     await message.answer('Отлично, мы добавили ващ запрос на встречу')
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
