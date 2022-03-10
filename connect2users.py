@@ -9,6 +9,8 @@ gc = Google_controller()
 def connect2users():
     all_requests = db.get_requests2meet()
     print(all_requests)
+    link = None
+    name = None
     while len(all_requests) > 1:
         # id, user_id, date, difficulty, type, companies
         last_request = all_requests.pop()
@@ -24,6 +26,7 @@ def connect2users():
         print(user1)
         user2 = db.get_user_by_id(match[1])[0]
         print(user2)
+        name = user2[1]
         event_body = gc.generate_event_body(f"Пробное собеседование",
                                             f"Привет, это бот Mockich. Поздравляю! У тебя получился match и мы смогли найти тебе партнера для пробного собеседования",
                                             match[2], user1[2], user2[2])
@@ -41,7 +44,10 @@ def connect2users():
         db.delete_requests2meet(match[0])
         db.delete_requests2meet(last_request[0])
 
-    return
+        db.increase_meetings_counter(match[1])
+        db.increase_meetings_counter(last_request[1])
+
+    return (link, name)
 
 
 if __name__ == "__main__":

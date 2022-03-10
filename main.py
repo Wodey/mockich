@@ -221,8 +221,9 @@ async def save_request_to_meeting(message: types.Message):
             'type': type_i,
             'companies': ';'.join(list(state['companies']))
         })
-    connect2users()
-
+    (link, name) = connect2users()
+    if link:
+        await message.answer(f'Мы нашли для вас человека для собеседование, его имя: {name} \n Ссылка для подключения: {link}')
     await message.answer('Отлично, мы добавили ващ запрос на встречу')
 
 

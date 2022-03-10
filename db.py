@@ -15,6 +15,11 @@ class Database:
         with self.db.cursor() as cursor:
             cursor.execute(
                 f"INSERT INTO users (name, email, nickname) VALUES {data['name'], data['email'], data['nickname']};")
+    def increase_meetings_counter(self, id):
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE users SET meetings = meetings + 1 WHERE id = {id}"
+            )
 
     def get_user_by_id(self, id):
         with self.db.cursor() as cursor:
