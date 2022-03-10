@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import datetime
 import os.path
-
+from uuid import uuid4
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 class Google_controller:
@@ -38,6 +38,43 @@ class Google_controller:
         except HttpError as error:
             print('An error occurred: %s' % error)
 
+    @staticmethod
+    def generate_event_body(title, description, date, person1, person2):
+        hours, minutes = int(date.split(':')[0]), int(date.split(':')[1])
+        dateISO = datetime.datetime(2022, 3, 10, hours, minutes).isoformat()
+
+        event = {
+            'summary': title,
+            'description': description,
+            "conferenceData": {"createRequest": {"requestId": f"{uuid4().hex}",
+                                                 "conferenceSolutionKey": {"type": "hangoutsMeet"}}},
+            'start': {
+                'dateTime': dateISO,
+                'timeZone': "Europe/Moscow"
+            },
+            'end': {
+                'dateTime': dateISO,
+                'timeZone': "Europe/Moscow"
+            },
+            'attendees': [
+                {'email': person1},
+                {'email': person2},
+            ],
+            'reminders': {
+                'useDefault': True,
+            },
+        }
+        return event
+
+    def new_event(self, event):
+        try:
+            self.event = self.service.events().insert(calendarId='primary', sendNotifications=True, body=event,
+                                                      conferenceDataVersion=1).execute()
+            print(f"Event created: {self.event.get('htmlLink')}")
+
+        except HttpError as error:
+            print('An error occurred: %s' % error)
+
     def print_events(self):
         try:
             now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
@@ -62,4 +99,6 @@ class Google_controller:
 
 if __name__ == '__main__':
     gc = Google_controller()
-    gc.print_events()
+    r = gc.generate_event_body('Пробное собеседование между Иваном и иваном', 'Это пробное собес', '11:45',
+                               'ivannewest@gmail.com', 'ivanthesmartest@gmail.com')
+    gc.new_event(r)
