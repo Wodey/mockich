@@ -16,6 +16,13 @@ class Database:
             cursor.execute(
                 f"INSERT INTO users (name, email, nickname) VALUES {data['name'], data['email'], data['nickname']};")
 
+    def get_user_by_id(self, id):
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"SELECT id, name, email, nickname FROM users WHERE id = {id};"
+            )
+            return cursor.fetchall()
+
     def get_user_id_by_tg_name(self, nickname):
         with self.db.cursor() as cursor:
             cursor.execute(f"SELECT id FROM users WHERE nickname = '{nickname}'")

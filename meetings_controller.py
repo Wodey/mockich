@@ -70,7 +70,7 @@ class Google_controller:
         try:
             self.event = self.service.events().insert(calendarId='primary', sendNotifications=True, body=event,
                                                       conferenceDataVersion=1).execute()
-            print(f"Event created: {self.event.get('htmlLink')}")
+            return self.event.get('htmlLink')
 
         except HttpError as error:
             print('An error occurred: %s' % error)

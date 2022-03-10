@@ -1,5 +1,5 @@
 import logging
-
+from connect2users import connect2users
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
@@ -221,6 +221,8 @@ async def save_request_to_meeting(message: types.Message):
             'type': type_i,
             'companies': ';'.join(list(state['companies']))
         })
+    connect2users()
+
     await message.answer('Отлично, мы добавили ващ запрос на встречу')
 
 
