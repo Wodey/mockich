@@ -80,7 +80,7 @@ if __name__ == "__main__":
     print(db.get_users())
     db.initialization()
 
-    # db.create_user({'name': 'ivan', 'email': 'ivannewest@gmail.com', 'nickname': 'Ivannewest'})
+    # db.create_user({'name': 'ivan', 'email': 'ivan    newest@gmail.com', 'nickname': 'Ivannewest'})
     # db.create_user({'name': 'Ванька', 'email': 'ivansmartest@gmail.com', 'nickname': 'Ivansmartest'})
     # print(db.get_user_id_by_tg_name('Ivannewest')[0])
     # db.create_request2meet({

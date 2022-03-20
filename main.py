@@ -1,10 +1,12 @@
 import logging
+
+import requests
+
 from connect2users import connect2users
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
 from db import Database
-
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
@@ -18,6 +20,7 @@ state = {
     'page': 0,
     'name': None,
     'email': None,
+    'chat_id': None,
     'times': set(),
     'companies': set()
 }
@@ -26,6 +29,7 @@ state = {
 @dp.message_handler(commands=['start'])
 async def welcome(message: types.Message):
     state['page'] = 0
+    state['chat_id'] = message.chat.id
     keyboard = types.ReplyKeyboardMarkup()
     button1 = types.KeyboardButton(text='Зарегистрироваться')
     button2 = types.KeyboardButton(text='Назначить собеседование')
@@ -54,7 +58,6 @@ async def get_name(message: types.Message):
 async def get_email(message: types.Message):
     state['page'] = 3
     state['email'] = message.text
-    state['tg_username'] = message.from_user.username
     keyboard = types.ReplyKeyboardMarkup()
     button1 = types.KeyboardButton(text='Да')
     button2 = types.KeyboardButton(text='Нет')
@@ -73,11 +76,23 @@ async def save_date(message: types.Message):
     button2 = types.KeyboardButton(text='Назначить собеседование')
     keyboard.add(button1)
     keyboard.add(button2)
-    db.create_user({
-        'name': state['name'],
+
+
+    data = {
+        'full_name': state['name'],
         'email': state['email'],
-        'nickname': state['tg_username']
-    })
+        'chat_id': str(message.chat.id)
+    }
+
+    existing_user = requests.get('http://164.92.148.198:8081/user', params={'email': data['email']}).json()
+    print(existing_user)
+    if len(existing_user) > 0:
+        state['page'] = 6
+        await message.answer(f"Пользователь с такой почтой уже существует!")
+        await message.answer(f"Введи другую почту")
+        return
+
+    r = requests.post('http://164.92.148.198:8081/user', json=data)
     await message.answer(f"Твоя анкета готова, теперь можешь назначить собеседование ", reply_markup=keyboard)
 
 
