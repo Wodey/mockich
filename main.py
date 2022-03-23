@@ -1,5 +1,5 @@
 import logging
-
+from datetime import datetime, timezone, timedelta
 import requests
 
 from connect2users import connect2users
@@ -83,9 +83,10 @@ async def save_date(message: types.Message):
         'email': state['email'],
         'chat_id': str(message.chat.id)
     }
-
+    print(data['email'])
     existing_user = requests.get('http://164.92.148.198:8081/user', params={'email': data['email']}).json()
     print(existing_user)
+    print(message.chat.id)
     if len(existing_user) > 0:
         state['page'] = 6
         await message.answer(f"Пользователь с такой почтой уже существует!")
@@ -141,7 +142,7 @@ async def update_all(message: types.Message):
 async def schedule(message: types.Message):
     state['page'] = 7
     keyboard = types.ReplyKeyboardMarkup()
-    for i in ["11-12", "13-14", "15-16", "17-18", "19-20"]:
+    for i in ["11:12", "13:14", "15:16", "17:18", "19:20"]:
         keyboard.add(types.KeyboardButton(text=i))
 
     keyboard.add(types.KeyboardButton(text='Далее'))
@@ -152,12 +153,14 @@ async def schedule(message: types.Message):
 
 @dp.message_handler(lambda msg: state['page'] == 7 and msg.text != 'Далее')
 async def set_time(message: types.Message):
+    h, m = int(message.text.split(':')[0]), int(message.text.split(':')[1])
+    dtime = datetime(2022, 3, 25, h, m, tzinfo=timezone(timedelta(hours=-3)))
     if message.text in state['times']:
-        state['times'].remove(message.text)
+        state['times'].remove(dtime)
     else:
-        state['times'].add(message.text)
+        state['times'].add(dtime)
 
-    await message.answer(f"Текущее выбранное время: {' ,'.join(e for e in state['times'])}")
+    await message.answer(f"Текущее выбранное время: {' ,'.join(e.strftime('%H:%M') for e in state['times'])}")
 
 
 @dp.message_handler(lambda msg: state['page'] == 7 and msg.text == 'Далее')
@@ -229,17 +232,32 @@ async def save_request_to_meeting(message: types.Message):
             type_i = 3
 
     for i in state['times']:
-        db.create_request2meet({
-            'date': i,
-            'user_id': user_id,
-            'difficulty': difficulty,
-            'type': type_i,
-            'companies': ';'.join(list(state['companies']))
+        print(difficulty),
+        print(message.chat.id)
+        print(i.isoformat())
+        print(state['intervie_type'])
+        r = requests.post('http://164.92.148.198:8081/interview', json={
+            "date": str(i.isoformat()),
+            "chat_id": int(message.chat.id),
+            "level": int(difficulty),
+            "theme": state['intervie_type']
         })
-    (link, name) = connect2users()
-    if link:
-        await message.answer(f'Мы нашли для вас человека для собеседование, его имя: {name} \n Ссылка для подключения: {link}')
-    await message.answer('Отлично, мы добавили ващ запрос на встречу')
+    #
+    #     db.create_request2meet({
+    #         'date': i,
+    #         'user_id': user_id,
+    #         'difficulty': difficulty,
+    #         'type': type_i,
+    #         'companies': ';'.join(list(state['companies']))
+    #     })
+    # (link, name) = connect2users()
+    # if link:
+    #     await message.answer(f'Мы нашли для вас человека для собеседование, его имя: {name} \n Ссылка для подключения: {link}')
+    if r.status_code == 200:
+        await message.answer('Отлично, мы добавили ващ запрос на встречу')
+        return
+    print(r.status_code)
+    await message.answer('Ошибка!')
 
 
 if __name__ == '__main__':
