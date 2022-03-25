@@ -2,16 +2,13 @@ import logging
 from datetime import datetime, timezone, timedelta
 import requests
 
-from connect2users import connect2users
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
-from db import Database
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 
-db = Database()
 
 bot = Bot(token=getenv('BOT_TOKEN'))
 dp = Dispatcher(bot)
@@ -210,7 +207,6 @@ async def set_company(message: types.Message):
 async def save_request_to_meeting(message: types.Message):
     state['page'] = 11
     nickname = message.from_user.username
-    user_id = db.get_user_id_by_tg_name(nickname)[0]
 
     match state['difficulty_level']:
         case 'Легкий':
