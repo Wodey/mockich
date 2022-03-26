@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timezone, timedelta
 import requests
 
-from connect2users import connect2users
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
@@ -242,17 +241,6 @@ async def save_request_to_meeting(message: types.Message):
             "level": int(difficulty),
             "theme": state['intervie_type']
         })
-    #
-    #     db.create_request2meet({
-    #         'date': i,
-    #         'user_id': user_id,
-    #         'difficulty': difficulty,
-    #         'type': type_i,
-    #         'companies': ';'.join(list(state['companies']))
-    #     })
-    # (link, name) = connect2users()
-    # if link:
-    #     await message.answer(f'Мы нашли для вас человека для собеседование, его имя: {name} \n Ссылка для подключения: {link}')
     if r.status_code == 200:
         await message.answer('Отлично, мы добавили ващ запрос на встречу')
         return
