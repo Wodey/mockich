@@ -1,0 +1,16 @@
+version: "3.3"
+
+services:
+  tgbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "tgbot-container"
+    # ports:
+    #   - 8081:8081
+    networks:
+      - gomocknetwork
+
+networks:
+  gomocknetwork:
+    driver: bridge
