@@ -143,7 +143,7 @@ async def update_all(message: types.Message):
     keyboard.add(button1)
     keyboard.add(button2)
 
-    await message.answer(f"Всё Верно?\n Имя: {state['name']} \n Email: {state['email']}", reply_markup=keyboard)
+    await message.answer(f"Всё Верно?\n Имя: {state.full_name} \n Email: {state.email}", reply_markup=keyboard)
 
 
 @dp.message_handler(lambda msg: msg.text in ['Назначить собеседование', '/interview'])
