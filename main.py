@@ -50,6 +50,16 @@ async def welcome(message: types.Message):
 
 @dp.message_handler(lambda msg: msg.text in {'Зарегистрироваться', '/Зарегистрироваться', '/register'})
 async def register(message: types.Message):
+
+    state.clear_state()
+
+    url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
+    r = requests.get(url)
+    is_user_exists = len(r.json()) > 0
+
+    if is_user_exists:
+        return await message.answer('Вы уже зарегистрировались! Хотите что-то поменять?')
+
     state.page = 1
     await message.answer('Введи пожалуйста, свое имя')
 
@@ -102,6 +112,22 @@ async def save_date(message: types.Message):
         return
 
     r = requests.post('http://164.92.148.198:8081/user', json=data)
+
+    if r.status_code != 200:
+        return await message.answer('Ошибка!')
+    state.clear_state()
+
+    url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
+    r_2 = requests.get(url)
+    is_user_exists = len(r_2.json()) > 0
+
+    keyboard = types.ReplyKeyboardMarkup()
+    button1 = types.KeyboardButton(text='Зарегистрироваться')
+    if not is_user_exists:
+        keyboard.add(button1)
+    button2 = types.KeyboardButton(text='Назначить собеседование')
+    keyboard.add(button2)
+
     await message.answer(f"Твоя анкета готова, теперь можешь назначить собеседование ", reply_markup=keyboard)
 
 
