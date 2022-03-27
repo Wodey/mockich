@@ -45,7 +45,8 @@ async def welcome(message: types.Message):
     if not is_user_exists:
         keyboard.add(button1)
     button2 = types.KeyboardButton(text='Назначить собеседование')
-    keyboard.add(button2)
+    if is_user_exists:
+        keyboard.add(button2)
 
     if is_user_exists:
         return await message.answer("Привет! Я бот - помогу получить оффер с помощью пробоного собеседования \n"
@@ -188,6 +189,15 @@ days = ["Понедельник", "Вторник", "Среда", "Четвер�
 @dp.message_handler(lambda msg: msg.text in ['Назначить собеседование', '/interview'] or state.page == SELECT_DAYS_2  \
                                 and msg.text == 'Текущая неделя' or state.page == SELECT_TIME_1 and msg.text == 'Назад')
 async def schedule(message: types.Message):
+    url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
+    r = requests.get(url)
+    if r.status_code != 200:
+        print(r.text)
+
+    is_user_exists = len(r.json()) > 0
+
+    if not is_user_exists:
+        return await message.answer('Прежде чем подать заявку на собеседование, зарегестрируйся!')
 
     if state.page not in {SELECT_DAYS_1, SELECT_DAYS_2, SELECT_TIME_1}:
         state.clear_state()
