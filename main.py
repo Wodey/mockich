@@ -376,7 +376,7 @@ async def save_request_to_meeting(message: types.Message):
 
     for i in state.selected_times:
         r = requests.post('http://164.92.148.198:8081/interview', json={
-            "date": str(i.isoformat()),
+            "date": str(i.astimezone(timezone.utc).isoformat()),
             "chat_id": str(message.chat.id),
             "level": int(difficulty),
             "theme": state.theme
