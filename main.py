@@ -30,6 +30,9 @@ async def welcome(message: types.Message):
 
     url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
     r = requests.get(url)
+    if r.status_code != 200:
+        print(r.text)
+
     is_user_exists = len(r.json()) > 0
 
     keyboard = types.ReplyKeyboardMarkup()
@@ -55,6 +58,9 @@ async def register(message: types.Message):
 
     url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
     r = requests.get(url)
+    if r.status_code != 200:
+        print(r.text)
+
     is_user_exists = len(r.json()) > 0
 
     if is_user_exists:
@@ -101,10 +107,11 @@ async def save_date(message: types.Message):
         'email': state.email,
         'chat_id': str(message.chat.id)
     }
-    print(data['email'])
-    existing_user = requests.get('http://164.92.148.198:8081/user', params={'email': data['email']}).json()
-    print(existing_user)
-    print(message.chat.id)
+    r = requests.get('http://164.92.148.198:8081/user', params={'email': data['email']})
+    if r.status_code != 200:
+        print(r.text)
+
+    existing_user = r.json()
     if len(existing_user) > 0:
         state.page = 6
         await message.answer(f"Пользователь с такой почтой уже существует!")
@@ -112,8 +119,8 @@ async def save_date(message: types.Message):
         return
 
     r = requests.post('http://164.92.148.198:8081/user', json=data)
-
     if r.status_code != 200:
+        print(r.text)
         return await message.answer('Ошибка!')
     state.clear_state()
 
@@ -243,7 +250,6 @@ async def set_company(message: types.Message):
 @dp.message_handler(lambda msg: state.page == 10 and msg.text == 'Далее')
 async def save_request_to_meeting(message: types.Message):
     state.page = 11
-    nickname = message.from_user.username
 
     match state.difficulty_level:
         case 'Легкий':
@@ -254,9 +260,6 @@ async def save_request_to_meeting(message: types.Message):
             difficulty = 3
 
     for i in state.selected_times:
-        print(difficulty),
-        print(message.chat.id)
-        print(i.isoformat())
         r = requests.post('http://164.92.148.198:8081/interview', json={
             "date": str(i.isoformat()),
             "chat_id": str(message.chat.id),
@@ -267,7 +270,7 @@ async def save_request_to_meeting(message: types.Message):
         state.clear_state()
         await message.answer('Отлично, мы добавили ващ запрос на встречу')
         return
-    print(r.status_code)
+    print(r.text)
     await message.answer('Ошибка!')
 
 
