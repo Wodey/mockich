@@ -72,7 +72,7 @@ async def get_email(message: types.Message):
     keyboard.add(button1)
     keyboard.add(button2)
 
-    await message.answer(f"Всё Верно?\n Имя: {state.name} \n Email: {state.email}", reply_markup=keyboard)
+    await message.answer(f"Всё Верно?\n Имя: {state.full_name} \n Email: {state.email}", reply_markup=keyboard)
 
 
 @dp.message_handler(lambda msg: state.page == 3 and msg.text == 'Да')
