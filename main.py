@@ -17,6 +17,12 @@ dp = Dispatcher(bot)
 
 state = State(page=0)
 
+@dp.message_handler(commands=['help'])
+async def help(message: types.Message):
+    await message.answer("/register - чтобы заполнить базовую информацию о себе(не доступна, еслы вы уже "
+                         "зарегистрировались) \n /interview - чтобы создать запрос на пробное собеседование"
+                         "(чтобы её использовать вам нужна заполненная анкета с базовой информацией о себе)")
+
 @dp.message_handler(commands=['start'])
 async def welcome(message: types.Message):
     state.page = 0
@@ -42,7 +48,7 @@ async def welcome(message: types.Message):
                          reply_markup=keyboard)
 
 
-@dp.message_handler(lambda msg: msg.text in {'Зарегистрироваться', '/Зарегистрироваться', '/Register'})
+@dp.message_handler(lambda msg: msg.text in {'Зарегистрироваться', '/Зарегистрироваться', '/register'})
 async def register(message: types.Message):
     state.page = 1
     await message.answer('Введи пожалуйста, свое имя')
@@ -140,7 +146,7 @@ async def update_all(message: types.Message):
     await message.answer(f"Всё Верно?\n Имя: {state['name']} \n Email: {state['email']}", reply_markup=keyboard)
 
 
-@dp.message_handler(lambda msg: msg.text in ['Назначить собеседование'])
+@dp.message_handler(lambda msg: msg.text in ['Назначить собеседование', '/interview'])
 async def schedule(message: types.Message):
     state.page = 7
     keyboard = types.ReplyKeyboardMarkup()
