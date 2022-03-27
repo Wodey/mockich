@@ -14,14 +14,6 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=getenv('BOT_TOKEN'))
 dp = Dispatcher(bot)
 
-state = {
-    'page': 0,
-    'name': None,
-    'email': None,
-    'chat_id': None,
-    'times': set(),
-    'companies': set()
-}
 
 state = State(page=0)
 
@@ -29,17 +21,28 @@ state = State(page=0)
 async def welcome(message: types.Message):
     state.page = 0
     state.clear_state()
+
+    url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
+    r = requests.get(url)
+    is_user_exists = len(r.json()) > 0
+
     keyboard = types.ReplyKeyboardMarkup()
     button1 = types.KeyboardButton(text='Зарегистрироваться')
+    if not is_user_exists:
+        keyboard.add(button1)
     button2 = types.KeyboardButton(text='Назначить собеседование')
-    keyboard.add(button1)
     keyboard.add(button2)
+
+    if is_user_exists:
+        return await message.answer("Привет! Я бот - помогу получить оффер с помощью пробоного собеседования \n"
+                             "Чтобы найти партнера для собеседования жми кнопку 'Назначить собеседование'",
+                             reply_markup=keyboard)
     await message.answer("Привет! Я бот - помогу получить оффер с помощью пробоного собеседования \n Для начала "
                          "работы со мной, тебе нужно заполнить небольшую анкету о себе (Жми кнопку Зарегистрироваться)",
                          reply_markup=keyboard)
 
 
-@dp.message_handler(lambda msg: msg.text in {'Зарегистрироваться', '/Зарегистрироваться'})
+@dp.message_handler(lambda msg: msg.text in {'Зарегистрироваться', '/Зарегистрироваться', '/Register'})
 async def register(message: types.Message):
     state.page = 1
     await message.answer('Введи пожалуйста, свое имя')
