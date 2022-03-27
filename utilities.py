@@ -27,7 +27,7 @@ def get_date(week, day_words, hour):
             if month >= 12:
                 month = 1
             day = 1
-    return datetime(2022, month, day, hour, 0, tzinfo=timezone(timedelta(hours=-3)))
+    return datetime(2022, month, day, hour, 0, tzinfo=timezone.utc)
 
 
 def _get_amount_of_days_in_month():
