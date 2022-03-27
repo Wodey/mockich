@@ -10,6 +10,8 @@ class State:
     email: str = None
     difficulty_level: str = None
     theme: str = None
+    selected_day = None
+    selected_week = None
 
     def set_page(self, page):
         self.page = page
@@ -21,3 +23,6 @@ class State:
         self.theme = None
         self.email = None
         self.selected_times = set()
+        self.selected_day = None
+        self.selected_week = None
+
