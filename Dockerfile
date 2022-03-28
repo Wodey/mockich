@@ -1,4 +1,5 @@
 FROM python:3.10
+ENV TZ="Europe/Russia"
 
 RUN mkdir -p /usr/src/app/
 WORKDIR /usr/src/app/
