@@ -11,6 +11,8 @@ days_of_week = {
     "Воскресенье": 6
 }
 
+months = ["Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Декабря"]
+
 def get_date(week, day_words, hour):
 
     today = datetime.now().weekday()
@@ -34,11 +36,19 @@ def _get_amount_of_days_in_month():
     date = datetime.now()
     return (date.replace(month=date.month % 12 + 1, day=1) - timedelta(days=1)).day
 
+def get_rich_date(data):
+    hour = str(data.hour)
+    if len(hour) < 2:
+        hour = "0" + hour
+
+    return f"{data.day} {months[data.month - 1]} {hour}:00"
+
 if __name__ == "__main__":
-    print(get_date(0, "Воскресенье", 12))
-    get_date(1, "Понедельник", 12)
-    get_date(1, "Вторник", 12)
-    get_date(1, "Четверг", 12)
-    get_date(1, "Пятница", 12)
-    get_date(1, "Суббота", 12)
-    get_date(1, "Воскресенье", 12)
+    # print(get_date(0, "Воскресенье", 12))
+    # get_date(1, "Понедельник", 12)
+    # get_date(1, "Вторник", 12)
+    # get_date(1, "Четверг", 12)
+    # get_date(1, "Пятница", 12)
+    # get_date(1, "Суббота", 12)
+    # get_date(1, "Воскресенье", 12)
+    print(get_rich_data(datetime.now()))
