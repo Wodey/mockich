@@ -39,7 +39,6 @@ async def welcome(message: types.Message):
     state.page = 0
     state.clear_state()
 
-    #TODO: Move these URL to a constant.
     url = f"http://164.92.148.198:8081/user?chat_id={message.chat.id}"
     r = requests.get(url)
     if r.status_code != 200:
@@ -130,7 +129,6 @@ async def save_date(message: types.Message):
         await message.answer(f"Введи другую почту")
         return
 
-    # TODO: add log
     r = requests.post('http://164.92.148.198:8081/user', json=data)
     if r.status_code != 200:
         print(r.text)
@@ -210,6 +208,8 @@ async def schedule(message: types.Message):
         state.clear_state()
 
     state.page = SELECT_DAYS_1
+    # today = datetime.now().weekday()
+    # current_hour = datetime.now().hour
 
     current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
     today = current_time_with_tz.weekday()
@@ -256,11 +256,16 @@ hours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
 async def set_time(message: types.Message):
     state.selected_week = 0 if state.page == SELECT_DAYS_1 else 1 # 0 for current, 1 for next
     state.selected_day = message.text
+
+    # today = datetime.now().weekday()
+    # hour = datetime.now().hour
+
     
     current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
     today = current_time_with_tz.weekday()
     hour = current_time_with_tz.hour
 
+    
     keyboard = types.ReplyKeyboardMarkup()
     for i in hours:
         if state.page == SELECT_DAYS_1 and days[today] == message.text and hour >= i:
@@ -284,9 +289,12 @@ async def set_time(message: types.Message):
 
     state.page = SELECT_DAYS_1
 
+
     current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
     today = current_time_with_tz.weekday()
     current_hour = current_time_with_tz.hour
+    # today = datetime.now().weekday()
+    # current_hour = datetime.now().hour
 
     keyboard = types.ReplyKeyboardMarkup()
     if today == 6 and current_hour >= 23:
@@ -384,29 +392,28 @@ async def set_company(message: types.Message):
 async def save_request_to_meeting(message: types.Message):
     state.page = 11
 
-    #TODO: Need to fix this block
     match state.difficulty_level:
         case 'Легкий':
-            difficulty = 1
+            difficulty = 0
         case 'Средний':
-            difficulty = 2
-        case 'Тяжелый':
-            difficulty = 3
+            difficulty = 1
         case _:
-            difficulty = 4
+            difficulty = 3
 
     for i in state.selected_times:
+        print("************************************")
+        print(i)
         i  = pytzone(PREFERRED_TIMEZONE).localize(i) 
+        print(i)
         req_body = {
             "date": str(i.astimezone(timezone.utc).isoformat()),
             "chat_id": str(message.chat.id),
             "level": int(difficulty),
             "theme": state.theme
         }
+
         print(req_body)
-        # TODO: print response body
         r = requests.post('http://164.92.148.198:8081/interview', json=req_body)
-        # print(r.body())
     if r.status_code == 200:
         state.clear_state()
         await message.answer('Отлично, мы добавили ващ запрос на встречу')

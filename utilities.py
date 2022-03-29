@@ -27,6 +27,7 @@ def get_date(week, day_words, hour):
             if month >= 12:
                 month = 1
             day = 1
+    # return datetime(2022, month, day, hour, 0, tzinfo=timezone(timedelta(hours=0)))
     return datetime(2022, month, day, hour, 0)
 
 
@@ -42,4 +43,11 @@ def get_rich_date(data):
     return f"{data.day} {months[data.month - 1]} {hour}:00"
 
 if __name__ == "__main__":
+    # print(get_date(0, "Воскресенье", 12))
+    # get_date(1, "Понедельник", 12)
+    # get_date(1, "Вторник", 12)
+    # get_date(1, "Четверг", 12)
+    # get_date(1, "Пятница", 12)
+    # get_date(1, "Суббота", 12)
+    # get_date(1, "Воскресенье", 12)
     print(get_rich_data(datetime.now()))
