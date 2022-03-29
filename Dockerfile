@@ -8,4 +8,4 @@ ENV BOT_TOKEN=5168967834:AAH-Dv5cIpc6A4Z3udX8R3MT1xcEB_Rki9U
 COPY . /usr/src/app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python","main.py"]
+CMD ["python", "-u" , "main.py"]
