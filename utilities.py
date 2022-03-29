@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 
-
 days_of_week = {
     "Понедельник": 0,
     "Вторник": 1,
@@ -14,7 +13,6 @@ days_of_week = {
 months = ["Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Декабря"]
 
 def get_date(week, day_words, hour):
-
     today = datetime.now().weekday()
     month = datetime.now().month
     day = datetime.now().day
@@ -29,7 +27,8 @@ def get_date(week, day_words, hour):
             if month >= 12:
                 month = 1
             day = 1
-    return datetime(2022, month, day, hour, 0, tzinfo=timezone(timedelta(hours=-3)))
+    # return datetime(2022, month, day, hour, 0, tzinfo=timezone(timedelta(hours=0)))
+    return datetime(2022, month, day, hour, 0)
 
 
 def _get_amount_of_days_in_month():

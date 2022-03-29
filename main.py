@@ -1,15 +1,21 @@
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import timezone, timedelta
 import requests
 from state import State
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
+from zoneinfo import ZoneInfo
+import datetime
+from pytz import timezone as pytzone
 from utilities import get_date, get_rich_date
 
 SELECT_DAYS_1 = "SELECT_DAYS"
 SELECT_DAYS_2 = "SELECT_DAYS_2"
 SELECT_TIME_1 = "SELECT_TIME_1"
+
+PREFERRED_TIMEZONE = "Europe/Moscow"
+print("chosen timezone: " + PREFERRED_TIMEZONE)
 
 load_dotenv()
 
@@ -107,7 +113,6 @@ async def save_date(message: types.Message):
     keyboard.add(button1)
     keyboard.add(button2)
 
-
     data = {
         'full_name': state.full_name,
         'email': state.email,
@@ -203,8 +208,12 @@ async def schedule(message: types.Message):
         state.clear_state()
 
     state.page = SELECT_DAYS_1
-    today = datetime.now().weekday()
-    current_hour = datetime.now().hour
+    # today = datetime.now().weekday()
+    # current_hour = datetime.now().hour
+
+    current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
+    today = current_time_with_tz.weekday()
+    current_hour = current_time_with_tz.hour
 
     keyboard = types.ReplyKeyboardMarkup()
     if today == 6 and current_hour >= 23:
@@ -248,8 +257,15 @@ async def set_time(message: types.Message):
     state.selected_week = 0 if state.page == SELECT_DAYS_1 else 1 # 0 for current, 1 for next
     state.selected_day = message.text
 
-    today = datetime.now().weekday()
-    hour = datetime.now().hour
+    # today = datetime.now().weekday()
+    # hour = datetime.now().hour
+
+    
+    current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
+    today = current_time_with_tz.weekday()
+    hour = current_time_with_tz.hour
+
+    
     keyboard = types.ReplyKeyboardMarkup()
     for i in hours:
         if state.page == SELECT_DAYS_1 and days[today] == message.text and hour >= i:
@@ -272,8 +288,13 @@ async def set_time(message: types.Message):
         state.selected_times.add(date)
 
     state.page = SELECT_DAYS_1
-    today = datetime.now().weekday()
-    current_hour = datetime.now().hour
+
+
+    current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
+    today = current_time_with_tz.weekday()
+    current_hour = current_time_with_tz.hour
+    # today = datetime.now().weekday()
+    # current_hour = datetime.now().hour
 
     keyboard = types.ReplyKeyboardMarkup()
     if today == 6 and current_hour >= 23:
@@ -300,8 +321,13 @@ async def set_time(message: types.Message):
 async def next_step(message: types.Message):
     if len(state.selected_times) == 0:
         state.page = SELECT_DAYS_1
-        today = datetime.now().weekday()
-        current_hour = datetime.now().hour
+
+        # today = datetime.now().weekday()
+        # current_hour = datetime.now().hour
+
+        current_time_with_tz = datetime.datetime.now(ZoneInfo(PREFERRED_TIMEZONE))
+        today = current_time_with_tz.weekday()
+        current_hour = current_time_with_tz.hour
 
         keyboard = types.ReplyKeyboardMarkup()
         if today == 6 and current_hour >= 23:
@@ -375,12 +401,19 @@ async def save_request_to_meeting(message: types.Message):
             difficulty = 3
 
     for i in state.selected_times:
-        r = requests.post('http://164.92.148.198:8081/interview', json={
+        print("************************************")
+        print(i)
+        i  = pytzone(PREFERRED_TIMEZONE).localize(i) 
+        print(i)
+        req_body = {
             "date": str(i.astimezone(timezone.utc).isoformat()),
             "chat_id": str(message.chat.id),
             "level": int(difficulty),
             "theme": state.theme
-        })
+        }
+
+        print(req_body)
+        r = requests.post('http://164.92.148.198:8081/interview', json=req_body)
     if r.status_code == 200:
         state.clear_state()
         await message.answer('Отлично, мы добавили ващ запрос на встречу')
