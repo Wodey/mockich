@@ -15,6 +15,7 @@ SELECT_DAYS_2 = "SELECT_DAYS_2"
 SELECT_TIME_1 = "SELECT_TIME_1"
 
 PREFERRED_TIMEZONE = "Europe/Moscow"
+print("chosen timezone: " + PREFERRED_TIMEZONE)
 
 load_dotenv()
 
@@ -402,8 +403,8 @@ async def save_request_to_meeting(message: types.Message):
     for i in state.selected_times:
         print("************************************")
         print(i)
-        print(pytzone(PREFERRED_TIMEZONE).localize(i))
-        # print(i.replace)
+        i  = pytzone(PREFERRED_TIMEZONE).localize(i) 
+        print(i)
         req_body = {
             "date": str(i.astimezone(timezone.utc).isoformat()),
             "chat_id": str(message.chat.id),

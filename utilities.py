@@ -1,6 +1,4 @@
-from datetime import timedelta, timezone
-
-import datetime
+from datetime import datetime, timedelta, timezone
 
 days_of_week = {
     "Понедельник": 0,
