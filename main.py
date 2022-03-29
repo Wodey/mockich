@@ -5,10 +5,10 @@ from state import State
 from aiogram import Bot, Dispatcher, executor, types
 from dotenv import load_dotenv
 from os import getenv
-from utilities import get_date
 from zoneinfo import ZoneInfo
 import datetime
 from pytz import timezone as pytzone
+from utilities import get_date, get_rich_date
 
 SELECT_DAYS_1 = "SELECT_DAYS"
 SELECT_DAYS_2 = "SELECT_DAYS_2"
@@ -222,7 +222,7 @@ async def schedule(message: types.Message):
 
         keyboard.add(types.KeyboardButton(text='Далее'))
         return await message.answer(f"Выбери пожалуйста удобный день на следущей неделе(на этой неделе всё занято)\nНажми на кнопку чтобы указать день как удобный\
-           \nКогда закончишь, жми далее, \nВыбранное время: {', '.join(e.strftime('%A %d %H:%M') for e in state.selected_times)}", reply_markup=keyboard)
+           \nКогда закончишь, жми далее, \nВыбранное время: {', '.join(get_rich_date(e) for e in state.selected_times)}", reply_markup=keyboard)
 
     for index, i in enumerate(days[today:]):
         if index == today and current_hour >= 23:
@@ -233,7 +233,7 @@ async def schedule(message: types.Message):
     keyboard.add(types.KeyboardButton(text='Далее'))
 
     await message.answer(f"Выбери пожалуйста удобный день\nНажми на кнопку чтобы указать день как удобный\
-    \nКогда закончишь, жми далее\nВыбранное время: {', '.join(e.strftime('%A %d %H:%M') for e in state.selected_times)}", reply_markup=keyboard)
+    \nКогда закончишь, жми далее\nВыбранное время: {', '.join(get_rich_date(e) for e in state.selected_times)}", reply_markup=keyboard)
 
 
 @dp.message_handler(lambda msg: state.page == SELECT_DAYS_1 and msg.text == 'Следущая неделя')
@@ -247,7 +247,7 @@ async def set_time1(message: types.Message):
     keyboard.add(types.KeyboardButton(text='Далее'))
 
     await message.answer(f"Выбери пожалуйста удобный день\nНажми на кнопку чтобы указать день как удобный \
-     \nКогда закончишь, жми далее\nВыбранное время: {', '.join(e.strftime('%A %d %H:%M') for e in state.selected_times)}", reply_markup=keyboard)
+     \nКогда закончишь, жми далее\nВыбранное время: {', '.join(get_rich_date(e) for e in state.selected_times)}", reply_markup=keyboard)
 
 
 hours = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
@@ -276,7 +276,7 @@ async def set_time(message: types.Message):
 
     state.page = SELECT_TIME_1
     await message.answer(f"Выбери пожалуйста удобное время\nНажми на кнопку чтобы указать время как удобное \
-     \nиз удобных \n Когда закончишь, жми далее\nВыбранное время: {', '.join(e.strftime('%A %d %H:%M') for e in state.selected_times)}", reply_markup=keyboard)
+     \nиз удобных \n Когда закончишь, жми далее\nВыбранное время: {', '.join(get_rich_date(e) for e in state.selected_times)}", reply_markup=keyboard)
 
 @dp.message_handler(lambda msg: state.page == SELECT_TIME_1 and int(msg.text.split(':')[0]) in hours)
 async def set_time(message: types.Message):
@@ -303,7 +303,7 @@ async def set_time(message: types.Message):
 
         keyboard.add(types.KeyboardButton(text='Далее'))
         return await message.answer(f"Выбери пожалуйста удобный день на следущей неделе(на этой неделе всё занято)\nНажми на кнопку чтобы указать день как удобный\
-           \nКогда закончишь, жми далее, \nВыбранное время: {', '.join(e.strftime('%A %d %H:%M') for e in state.selected_times)}", reply_markup=keyboard)
+           \nКогда закончишь, жми далее, \nВыбранное время: {', '.join(get_rich_date(e) for e in state.selected_times)}", reply_markup=keyboard)
 
     for index, i in enumerate(days[today:]):
         if index == today and current_hour >= 23:
@@ -313,7 +313,7 @@ async def set_time(message: types.Message):
     keyboard.add(types.KeyboardButton(text='Следущая неделя'))
     keyboard.add(types.KeyboardButton(text='Далее'))
     await message.answer(f"Выбери пожалуйста удобный день\nНажми на кнопку чтобы указать день как удобный\
-    \nКогда закончишь, жми далее\nВыбранное время: {', '.join(e.strftime('%A %d %H:%M') for e in state.selected_times)}",
+    \nКогда закончишь, жми далее\nВыбранное время: {', '.join(get_rich_date(e) for e in state.selected_times)}",
                          reply_markup=keyboard)
 
 
